@@ -86,36 +86,58 @@ namespace NGO.Client
             
             if (serverState.Tick <= _lastProcessedServerTick)
                 return;
+
+            _lastProcessedServerTick = serverState.Tick;
             
             if (!_predictedStates.TryGetValue(serverState.Tick, out var clientState))
-                return;
-            
-            _lastProcessedServerTick = serverState.Tick;
-
-            if (Vector3.Distance(clientState.Position, serverState.Position) <= _positionThreshold)
-                return;
-            
-            var inputs = _inputHistory.Where(x => x.Tick > serverState.Tick).ToArray();
-            _inputHistory.RemoveAll(x => x.Tick <= serverState.Tick);
-            var keysToRemove = _predictedStates.Keys.Where(x => x > serverState.Tick).ToArray();
-
-            foreach (var key in keysToRemove)
             {
-                _predictedStates.Remove(key);
+                _currentState = serverState;
+                transform.position = serverState.Position;
+
+                _inputHistory.RemoveAll(x => x.Tick <= serverState.Tick);
+                _predictedStates.Clear();
+
+                ReplayInputsAfter(serverState);
+                return;
             }
             
+            if (Vector3.Distance(clientState.Position, serverState.Position) <= _positionThreshold)
+            {
+                _inputHistory.RemoveAll(x => x.Tick <= serverState.Tick);
+
+                foreach (var key in _predictedStates.Keys.Where(x => x <= serverState.Tick).ToArray())
+                    _predictedStates.Remove(key);
+
+                return;
+            }
+
+            _currentState = serverState;
+            transform.position = serverState.Position;
+
+            ReplayInputsAfter(serverState);
+        }
+
+        private void ReplayInputsAfter(PlayerMovementState serverState)
+        {
+            var inputs = _inputHistory.Where(x => x.Tick > serverState.Tick).ToArray();
+
+            _inputHistory.RemoveAll(x => x.Tick <= serverState.Tick);
+
+            foreach (var key in _predictedStates.Keys.Where(x => x > serverState.Tick).ToArray())
+                _predictedStates.Remove(key);
+
             var state = serverState;
-            
+
             foreach (var input in inputs)
             {
                 state.Tick = input.Tick;
                 _simulation.SimulateMovement(input, ref state);
                 _predictedStates[input.Tick] = state;
-            } 
-            
+            }
+
             _currentState = state;
         }
-
+        
         private void Update()
         {
             if (!_constructed)

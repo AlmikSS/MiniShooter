@@ -20,12 +20,9 @@ namespace NGO.Server
         
         public TickPhase UpdatePhase => TickPhase.ServerPhase;
         
-        public void Construct(PlayerMovementSimulation simulation, LocalPlayerMovementPrediction prediction, RemotePlayerMovement remotePlayerMovement)
+        public void Construct(PlayerMovementSimulation simulation)
         {
             _simulation = simulation;
-            _prediction = prediction;
-            _remotePlayerMovement = remotePlayerMovement;
-            
             _tickSystem = ServiceLocator.Get<TickSystem>();
             _tickSystem.Register(this);
             
@@ -36,6 +33,12 @@ namespace NGO.Server
             };
         }
 
+        public void SetClient(LocalPlayerMovementPrediction prediction, RemotePlayerMovement remotePlayerMovement)
+        {
+            _prediction = prediction;
+            _remotePlayerMovement = remotePlayerMovement;
+        }
+
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
@@ -44,19 +47,29 @@ namespace NGO.Server
 
         public void Tick(float deltaTime)
         {
-            if (_inputQueue.Count <= 0)
-            {
-                UpdateSimulate(deltaTime);
-                return;
-            }
+            var processedAnyInput = false;
             
             while (_inputQueue.Count > 0)
             {
                 var input = _inputQueue.Dequeue();
-                _authorityState.Tick = _tickSystem.Tick;
-                
-                input.Tick = _tickSystem.Tick;
+                _authorityState.Tick = input.Tick;
+                input.DeltaTime = deltaTime;
                 _simulation.SimulateMovement(input, ref _authorityState);
+                processedAnyInput = true;
+            }
+
+            if (!processedAnyInput)
+            {
+                _authorityState.Tick = _tickSystem.Tick;
+
+                _simulation.SimulateMovement(
+                    new PlayerMovementInput
+                    {
+                        Tick = _tickSystem.Tick,
+                        DeltaTime = deltaTime
+                    },
+                    ref _authorityState
+                );
             }
 
             transform.position = _authorityState.Position;
@@ -73,18 +86,6 @@ namespace NGO.Server
         {
             _prediction.ReceiveAuthorityState(state);
             _remotePlayerMovement.ReceiveStateSnapshot(state);
-        }
-
-        private void UpdateSimulate(float deltaTime)
-        {
-            _authorityState.Tick = _tickSystem.Tick;
-
-            _simulation.SimulateMovement(
-                new PlayerMovementInput { Tick = _tickSystem.Tick, DeltaTime = deltaTime },
-                ref _authorityState
-            );
-
-            transform.position = _authorityState.Position;
         }
     }
 }

@@ -23,10 +23,11 @@ namespace Binders
         protected override void Construct()
         {
             var movementSimulation = new PlayerMovementSimulation(_orientationTransform, _groundCheckTransform, _groundCheckRadius, _config, _groundLayerMask, _obstacleLayerMask, _obstacleCheckRadius);
-            _movementServer.Construct(movementSimulation, _movementPrediction, _remotePlayerMovement);
-
+            _movementServer.SetClient(_movementPrediction, _remotePlayerMovement);
+            
             if (IsServer)
             {
+                _movementServer.Construct(movementSimulation);
                 _movementPrediction.SetServer(_movementServer);
             }
             
