@@ -77,7 +77,14 @@ namespace NGO.Server
 
         private void UpdateSimulate(float deltaTime)
         {
-            _simulation.SimulateMovement(new PlayerMovementInput{ DeltaTime = deltaTime }, ref _authorityState);
+            _authorityState.Tick = _tickSystem.Tick;
+
+            _simulation.SimulateMovement(
+                new PlayerMovementInput { Tick = _tickSystem.Tick, DeltaTime = deltaTime },
+                ref _authorityState
+            );
+
+            transform.position = _authorityState.Position;
         }
     }
 }

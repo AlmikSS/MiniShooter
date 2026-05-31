@@ -38,15 +38,16 @@ namespace Visual.Player
             var horizontalVelocity = new Vector3(state.Velocity.x, 0f, state.Velocity.z);
             var verticalVelocity = state.Velocity.y;
             var targetVelocity = moveDirection * speed;
+            var grounded = IsGrounded(position);
             
             horizontalVelocity = CanMove(moveDirection) ? Vector3.Lerp(horizontalVelocity, targetVelocity, _config.Acceleration * deltaTime) : Vector3.zero;
 
-            if (IsGrounded())
+            if (grounded)
                 verticalVelocity = 0f;
             else
                 verticalVelocity += _config.GravityScale * deltaTime;
 
-            if (input.IsJump && IsGrounded())
+            if (input.IsJump && grounded)
                 verticalVelocity = _config.JumpHeight;
             
             Velocity = horizontalVelocity + Vector3.up * verticalVelocity;
@@ -54,7 +55,7 @@ namespace Visual.Player
             
             state.Position = position;
             state.Velocity = Velocity;
-            state.IsGrounded = IsGrounded();
+            state.IsGrounded = grounded;
         }
         
         private Vector3 CalculateDirection(Vector3 inputDirection)
@@ -65,9 +66,19 @@ namespace Visual.Player
             return direction - Vector3.Dot(direction, normal) * normal;
         }
 
-        private bool IsGrounded()
+        private Vector3 GetGroundCheckPosition(Vector3 playerPosition)
         {
-            return Physics.CheckSphere(_groundCheckOrigin.position, _groundCheckRadius, _groundLayerMask, QueryTriggerInteraction.Ignore);
+            return playerPosition + _groundCheckOrigin.localPosition;
+        }
+
+        private bool IsGrounded(Vector3 playerPosition)
+        {
+            return Physics.CheckSphere(
+                GetGroundCheckPosition(playerPosition),
+                _groundCheckRadius,
+                _groundLayerMask,
+                QueryTriggerInteraction.Ignore
+            );
         }
 
         private bool CanMove(Vector3 moveDirection)

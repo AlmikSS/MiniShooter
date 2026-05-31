@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Visual.Player
 {
-    public class PlayerCameraController : MonoBehaviour
+    public class PlayerCameraController : NetworkBehaviour
     {
         [Title("Dependencies")]
         [SerializeField] private Transform _orientationTransform;

@@ -248,6 +248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7cf5f622593420ebd77edb3c31a5ba7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Core.Simulation.Player.PlayerCameraController
+  ShowTopMostFoldoutHeaderGroup: 1
   _orientationTransform: {fileID: 6099424059257889894}
   _lookRoot: {fileID: 6930534261700427708}
   _effectsRoot: {fileID: 3519363920839151732}
