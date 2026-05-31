@@ -30,7 +30,7 @@ namespace Core.TicksSystem
         public float TickExecutionTimeMs { get; private set; }
         public int Tick => _ticksCount;
 
-        public void Construct()
+        public void Construct(int tick = 0)
         {
             ServiceLocator.Register(this);
 
@@ -41,6 +41,7 @@ namespace Core.TicksSystem
                 _tickables[phase] = new List<ITickable>();
             }
 
+            _ticksCount = tick;
             _isConstruct = true;
         }
 

@@ -25,12 +25,13 @@ namespace Core.Input
 
         public void Construct(bool isServer)
         {
-            if (isServer)
-                return;
+            // if (isServer)
+            //     return;
             
             ServiceLocator.Register<IInputSystem>(this);
             ServiceLocator.Get<TickSystem>().Register(this);
-            
+
+            _inputActions = new InputActions();
             _inputActions.Enable();
             _isConstruct = true;
         }

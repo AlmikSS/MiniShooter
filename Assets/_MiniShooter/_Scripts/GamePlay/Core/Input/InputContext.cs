@@ -2,7 +2,7 @@
 {
     public enum InputContext
     {
+        Gameplay,
         UI,
-        Gameplay
     }
 }
