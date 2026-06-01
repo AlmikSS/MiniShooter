@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using Core.DIServiceLocator;
 using Core.NGO.Types;
-using Core.TicksSystem;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -9,25 +7,29 @@ namespace NGO.Client
 {
     public sealed class RemotePlayerMovement : NetworkBehaviour
     {
-        [SerializeField] private float _interpolateTime;
-        
-        private readonly Queue<PositionSnapshot> _snapshotQueue = new();
-        private PositionSnapshot _from;
-        private PositionSnapshot _to;
+        [SerializeField] private int _interpolationDelayTicks = 3;
+        [SerializeField] private int _maxSnapshots = 32;
+
+        private readonly List<PositionSnapshot> _snapshots = new();
+
+        private int _latestReceivedTick;
         private float _timer;
-        private float _tickInterval;
         private bool _constructed;
+        private bool _hasSnapshots;
         
         public void Construct()
         {
             _constructed = true;
-            _tickInterval = ServiceLocator.Get<TickSystem>().TickInterval;
         }
 
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
+            
             _constructed = false;
+            _hasSnapshots = false;
+            _timer = 0f;
+            _snapshots.Clear();
         }
 
         public void ReceiveStateSnapshot(PlayerMovementState state)
@@ -36,38 +38,58 @@ namespace NGO.Client
                 return;
 
             var snapshot = new PositionSnapshot(state.Tick, state.Position);
-            
-            if (_snapshotQueue.Count == 0)
-            {
-                _from = snapshot;
-                _to = snapshot;
 
-                transform.position = snapshot.Position;
-            }
-            
-            _snapshotQueue.Enqueue(snapshot);
+            _latestReceivedTick = Mathf.Max(_latestReceivedTick, state.Tick);
+
+            _snapshots.Add(snapshot);
+            _snapshots.Sort((a, b) => a.Tick.CompareTo(b.Tick));
+
+            while (_snapshots.Count > _maxSnapshots)
+                _snapshots.RemoveAt(0);
         }
 
         private void Update()
         {
             if (!_constructed)
                 return;
-            
-            if (_snapshotQueue.Count == 0)
-                return;
-            
-            _timer += Time.deltaTime / _tickInterval;
-            transform.position = Vector3.Lerp(_from.Position, _to.Position, _timer);
 
-            if (!(_timer >= 1f))
+            if (_snapshots.Count < 2)
                 return;
-            
-            if (_snapshotQueue.Count <= 0)
+
+            var renderTick = _latestReceivedTick - _interpolationDelayTicks;
+
+            PositionSnapshot? from = null;
+            PositionSnapshot? to = null;
+
+            for (var i = 0; i < _snapshots.Count - 1; i++)
+            {
+                if (_snapshots[i].Tick <= renderTick && _snapshots[i + 1].Tick >= renderTick)
+                {
+                    from = _snapshots[i];
+                    to = _snapshots[i + 1];
+                    break;
+                }
+            }
+
+            if (!from.HasValue || !to.HasValue)
+            {
+                transform.position = _snapshots[^1].Position;
                 return;
-            
-            _from = _to;
-            _to = _snapshotQueue.Dequeue();
-            _timer = 0f;
+            }
+
+            var fromSnapshot = from.Value;
+            var toSnapshot = to.Value;
+
+            var tickRange = Mathf.Max(1, toSnapshot.Tick - fromSnapshot.Tick);
+            var t = (renderTick - fromSnapshot.Tick) / (float)tickRange;
+
+            transform.position = Vector3.Lerp(
+                fromSnapshot.Position,
+                toSnapshot.Position,
+                t
+            );
+
+            _snapshots.RemoveAll(x => x.Tick < renderTick - _interpolationDelayTicks);
         }
     }
 

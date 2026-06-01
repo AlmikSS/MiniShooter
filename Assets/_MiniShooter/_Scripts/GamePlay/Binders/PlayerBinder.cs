@@ -2,7 +2,6 @@
 using NGO.Client;
 using NGO.Server;
 using Simulation.Player;
-using Unity.Netcode.Components;
 using UnityEngine;
 using Visual.Player;
 
@@ -39,7 +38,7 @@ namespace Binders
                 _movementPrediction.Construct(movementSimulation, _orientationTransform);
                 _cameraController.Construct(movementSimulation);
             }
-            else
+            else if (!IsServer)
             {
                 _remotePlayerMovement.Construct();
             }
