@@ -221,6 +221,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Binders.PlayerBinder
   ShowTopMostFoldoutHeaderGroup: 1
+  _networkTransform: {fileID: 0}
   _movementServer: {fileID: 1571158876156576375}
   _movementPrediction: {fileID: 628726402935212098}
   _remotePlayerMovement: {fileID: 7597152648597071157}

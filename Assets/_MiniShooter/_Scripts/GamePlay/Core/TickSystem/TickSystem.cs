@@ -28,6 +28,7 @@ namespace Core.TicksSystem
         public int TargetTickRate => _ticksPerSecond;
         public int RealTickRate { get; private set; }
         public float TickExecutionTimeMs { get; private set; }
+        public float TickInterval => _tickInterval;
         public int Tick => _ticksCount;
 
         public void Construct(int tick = 0)

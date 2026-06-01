@@ -1,4 +1,7 @@
-﻿using Core.NGO.Types;
+﻿using System.Collections.Generic;
+using Core.DIServiceLocator;
+using Core.NGO.Types;
+using Core.TicksSystem;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -8,12 +11,17 @@ namespace NGO.Client
     {
         [SerializeField] private float _interpolateTime;
         
-        private PlayerMovementState _authorityState;
+        private readonly Queue<PositionSnapshot> _snapshotQueue = new();
+        private PositionSnapshot _from;
+        private PositionSnapshot _to;
+        private float _timer;
+        private float _tickInterval;
         private bool _constructed;
         
         public void Construct()
         {
             _constructed = true;
+            _tickInterval = ServiceLocator.Get<TickSystem>().TickInterval;
         }
 
         public override void OnNetworkDespawn()
@@ -24,7 +32,20 @@ namespace NGO.Client
 
         public void ReceiveStateSnapshot(PlayerMovementState state)
         {
-            _authorityState = state;
+            if (!_constructed)
+                return;
+
+            var snapshot = new PositionSnapshot(state.Tick, state.Position);
+            
+            if (_snapshotQueue.Count == 0)
+            {
+                _from = snapshot;
+                _to = snapshot;
+
+                transform.position = snapshot.Position;
+            }
+            
+            _snapshotQueue.Enqueue(snapshot);
         }
 
         private void Update()
@@ -32,10 +53,33 @@ namespace NGO.Client
             if (!_constructed)
                 return;
             
-            if (transform.position == _authorityState.Position)
+            if (_snapshotQueue.Count == 0)
                 return;
             
-            transform.position = Vector3.Lerp(transform.position, _authorityState.Position, Time.deltaTime * _interpolateTime);
+            _timer += Time.deltaTime / _tickInterval;
+            transform.position = Vector3.Lerp(_from.Position, _to.Position, _timer);
+
+            if (!(_timer >= 1f))
+                return;
+            
+            if (_snapshotQueue.Count <= 0)
+                return;
+            
+            _from = _to;
+            _to = _snapshotQueue.Dequeue();
+            _timer = 0f;
+        }
+    }
+
+    public struct PositionSnapshot
+    {
+        public int Tick;
+        public Vector3 Position;
+
+        public PositionSnapshot(int tick, Vector3 position)
+        {
+            Tick = tick;
+            Position = position;
         }
     }
 }

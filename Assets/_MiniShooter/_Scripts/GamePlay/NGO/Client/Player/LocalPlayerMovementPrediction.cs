@@ -69,7 +69,7 @@ namespace NGO.Client
                 Tick = _tickSystem.Tick,
                 MoveInput = _inputSystem.Snapshot.MoveInput,
                 IsSprint = _inputSystem.Snapshot.SprintInput.IsPressed,
-                IsJump = _inputSystem.Snapshot.JumpInput.IsStarted,
+                IsJump = _inputSystem.Snapshot.JumpInput.IsPressed,
                 DeltaTime = deltaTime,
             };
             

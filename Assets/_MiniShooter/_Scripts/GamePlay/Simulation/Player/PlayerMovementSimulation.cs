@@ -48,7 +48,7 @@ namespace Simulation.Player
             else
                 verticalVelocity += _config.GravityScale * deltaTime;
             
-            if (input.IsJump)
+            if (input.IsJump && grounded)
                 verticalVelocity = _config.JumpHeight;
             
             Velocity = horizontalVelocity + Vector3.up * verticalVelocity;

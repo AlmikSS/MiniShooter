@@ -2,6 +2,7 @@
 using NGO.Client;
 using NGO.Server;
 using Simulation.Player;
+using Unity.Netcode.Components;
 using UnityEngine;
 using Visual.Player;
 
@@ -39,7 +40,9 @@ namespace Binders
                 _cameraController.Construct(movementSimulation);
             }
             else
+            {
                 _remotePlayerMovement.Construct();
+            }
         }
     }
 }
