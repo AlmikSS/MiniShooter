@@ -7,6 +7,7 @@ namespace Core.NGO.Types
     {
         public int Tick;
         public Vector3 Position;
+        public Vector3 OrientationRotation;
         public Vector3 Velocity;
         public bool IsGrounded;
         
@@ -14,6 +15,7 @@ namespace Core.NGO.Types
         {
             serializer.SerializeValue(ref Tick);
             serializer.SerializeValue(ref Position);
+            serializer.SerializeValue(ref OrientationRotation);
             serializer.SerializeValue(ref Velocity);
             serializer.SerializeValue(ref IsGrounded);
         }

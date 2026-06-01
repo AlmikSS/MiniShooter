@@ -4,13 +4,15 @@ using Core.NGO.Types;
 using Core.TicksSystem;
 using NGO.Client;
 using NGO.Types;
-using Visual.Player;
+using Simulation.Player;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace NGO.Server
 {
     public class PlayerMovementServer : NetworkBehaviour, ITickable
     {
+        private Transform _orientationTransform;
         private PlayerMovementSimulation _simulation;
         private LocalPlayerMovementPrediction _prediction;
         private RemotePlayerMovement _remotePlayerMovement;
@@ -20,8 +22,9 @@ namespace NGO.Server
         
         public TickPhase UpdatePhase => TickPhase.ServerPhase;
         
-        public void Construct(PlayerMovementSimulation simulation)
+        public void Construct(PlayerMovementSimulation simulation, Transform orientationTransform)
         {
+            _orientationTransform = orientationTransform;
             _simulation = simulation;
             _tickSystem = ServiceLocator.Get<TickSystem>();
             _tickSystem.Register(this);
@@ -30,6 +33,7 @@ namespace NGO.Server
             {
                 Tick = _tickSystem.Tick,
                 Position = transform.position,
+                OrientationRotation = _orientationTransform.eulerAngles,
             };
         }
 
@@ -53,6 +57,7 @@ namespace NGO.Server
             {
                 var input = _inputQueue.Dequeue();
                 _authorityState.Tick = input.Tick;
+                _authorityState.OrientationRotation = _orientationTransform.eulerAngles;
                 input.DeltaTime = deltaTime;
                 _simulation.SimulateMovement(input, ref _authorityState);
                 processedAnyInput = true;
@@ -61,12 +66,13 @@ namespace NGO.Server
             if (!processedAnyInput)
             {
                 _authorityState.Tick = _tickSystem.Tick;
+                _authorityState.OrientationRotation = _orientationTransform.eulerAngles;
 
                 _simulation.SimulateMovement(
                     new PlayerMovementInput
                     {
                         Tick = _tickSystem.Tick,
-                        DeltaTime = deltaTime
+                        DeltaTime = deltaTime,
                     },
                     ref _authorityState
                 );

@@ -1,5 +1,6 @@
 ﻿using Core.DIServiceLocator;
 using Core.Input;
+using Simulation.Player;
 using TriInspector;
 using Unity.Netcode;
 using UnityEngine;

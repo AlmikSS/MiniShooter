@@ -6,7 +6,7 @@ using Core.NGO.Types;
 using Core.TicksSystem;
 using NGO.Server;
 using NGO.Types;
-using Visual.Player;
+using Simulation.Player;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -16,6 +16,7 @@ namespace NGO.Client
     {
         [SerializeField] private float _positionThreshold;
         
+        private Transform _orientationTransform;
         private PlayerMovementSimulation _simulation; 
         private PlayerMovementServer _server;
         private IInputSystem _inputSystem;
@@ -28,8 +29,9 @@ namespace NGO.Client
 
         public TickPhase UpdatePhase => TickPhase.ClientPhase;
         
-        public void Construct(PlayerMovementSimulation simulation)
+        public void Construct(PlayerMovementSimulation simulation, Transform orientationTransform)
         {
+            _orientationTransform = orientationTransform;
             _simulation = simulation;
             _inputSystem = ServiceLocator.Get<IInputSystem>();
             _tickSystem = ServiceLocator.Get<TickSystem>();
@@ -39,6 +41,7 @@ namespace NGO.Client
             {
                 Tick = _tickSystem.Tick,
                 Position = transform.position,
+                OrientationRotation = _orientationTransform.eulerAngles
             };
 
             _constructed = true;
@@ -71,6 +74,7 @@ namespace NGO.Client
             };
             
             _currentState.Tick = _tickSystem.Tick;
+            _currentState.OrientationRotation = _orientationTransform.eulerAngles;
             _simulation.SimulateMovement(input, ref _currentState);
             
             _inputHistory.Add(input);

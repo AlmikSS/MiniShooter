@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1888880317
+  GlobalObjectIdHash: 4058339301
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -225,9 +225,10 @@ MonoBehaviour:
   _movementPrediction: {fileID: 628726402935212098}
   _remotePlayerMovement: {fileID: 7597152648597071157}
   _orientationTransform: {fileID: 6099424059257889894}
-  _groundCheckTransform: {fileID: 7012083221494867464}
   _groundCheckRadius: 0.2
-  _obstacleCheckRadius: 0.4
+  _groundCheckMaxDistance: 0.25
+  _height: 2
+  _radius: 0.5
   _config: {fileID: 11400000, guid: 8c816cb389bd8cc4a8ff8f3edb28ee28, type: 2}
   _groundLayerMask:
     serializedVersion: 2

@@ -17,3 +17,8 @@ MonoBehaviour:
   _acceleration: 5
   _jumpHeight: 4
   _gravityScale: -10
+  _skinWidth: 0.005
+  _minMoveDistance: 0.001
+  _maxMoveIterations: 5
+  _slopeAngle: 45
+  _maxStepHeight: 0.2
