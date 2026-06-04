@@ -29,12 +29,12 @@ namespace NGO.Client
 
         public TickPhase UpdatePhase => TickPhase.ClientPhase;
         
-        public void Construct(PlayerMovementSimulation simulation, Transform orientationTransform)
+        public void Construct(PlayerMovementSimulation simulation, Transform orientationTransform, TickSystem tickSystem, IInputSystem inputSystem)
         {
             _orientationTransform = orientationTransform;
             _simulation = simulation;
-            _inputSystem = ServiceLocator.Get<IInputSystem>();
-            _tickSystem = ServiceLocator.Get<TickSystem>();
+            _inputSystem = inputSystem;
+            _tickSystem = tickSystem;
             _tickSystem.Register(this);
 
             _currentState = new PlayerMovementState

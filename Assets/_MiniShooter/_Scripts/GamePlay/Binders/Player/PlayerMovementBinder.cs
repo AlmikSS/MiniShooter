@@ -1,4 +1,6 @@
 ﻿using Configs;
+using Core.Input;
+using Core.TicksSystem;
 using NGO.Client;
 using NGO.Server;
 using Simulation.Player;
@@ -7,7 +9,7 @@ using Visual.Player;
 
 namespace Binders
 {
-    public sealed class PlayerMovementBinder : MonoBehaviour
+    public sealed class PlayerMovementBinder : SystemBinder
     {
         [SerializeField] private PlayerMovementServer _movementServer;
         [SerializeField] private LocalPlayerMovementPrediction _movementPrediction;
@@ -22,20 +24,20 @@ namespace Binders
         [SerializeField] private LayerMask _obstacleLayerMask;
         [SerializeField] private PlayerCameraController _cameraController;
 
-        public void Bind(bool isServer, bool isOwner)
+        public override void Bind(bool isServer, bool isOwner, TickSystem tickSystem, IInputSystem inputSystem)
         {
             var movementSimulation = new PlayerMovementSimulation(_config, _groundLayerMask, _obstacleLayerMask, _groundCheckRadius, _groundCheckMaxDistance, _height, _radius);
             _movementServer.SetClient(_movementPrediction, _remotePlayerMovement);
             
             if (isServer)
             {
-                _movementServer.Construct(movementSimulation, _orientationTransform);
+                _movementServer.Construct(movementSimulation, _orientationTransform, tickSystem);
                 _movementPrediction.SetServer(_movementServer);
             }
             
             if (isOwner)
             {
-                _movementPrediction.Construct(movementSimulation, _orientationTransform);
+                _movementPrediction.Construct(movementSimulation, _orientationTransform, tickSystem, inputSystem);
                 _cameraController.Construct(movementSimulation);
             }
             else if (!isServer)

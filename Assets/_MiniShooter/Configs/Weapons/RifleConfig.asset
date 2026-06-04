@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63955ed9de994ae78cdc9efd015e0a70, type: 3}
+  m_Name: RifleConfig
+  m_EditorClassIdentifier: Assembly-CSharp::Configs.WeaponConfig
+  _id: rifle
+  _damage: 10
+  _headshotMultiplier: 1.2
+  _maxDistance: 1000
+  _fireRate: 600
+  _spread: 0.3
+  _verticalRecoil: 0.1
+  _maxAmmo: 900
+  _magazineCapacity: 30
+  _reloadTime: 3
+  _canPenetrate: 1
+  _maxPenetrationCount: 4
+  _maxPenetrationPower: 50

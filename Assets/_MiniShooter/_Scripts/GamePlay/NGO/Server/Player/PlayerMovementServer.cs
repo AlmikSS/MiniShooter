@@ -22,11 +22,11 @@ namespace NGO.Server
         
         public TickPhase UpdatePhase => TickPhase.ServerPhase;
         
-        public void Construct(PlayerMovementSimulation simulation, Transform orientationTransform)
+        public void Construct(PlayerMovementSimulation simulation, Transform orientationTransform, TickSystem tickSystem)
         {
             _orientationTransform = orientationTransform;
             _simulation = simulation;
-            _tickSystem = ServiceLocator.Get<TickSystem>();
+            _tickSystem = tickSystem;
             _tickSystem.Register(this);
             
             _authorityState = new PlayerMovementState
