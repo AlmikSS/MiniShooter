@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 2239315578961465891}
   - component: {fileID: 4360502123136420384}
   - component: {fileID: 8036899694643777327}
+  - component: {fileID: 2756859351411164370}
   - component: {fileID: 8215802349262256948}
   - component: {fileID: 1571158876156576375}
   - component: {fileID: 628726402935212098}
@@ -129,7 +130,6 @@ Transform:
   m_Children:
   - {fileID: 8288755420710434945}
   - {fileID: 6099424059257889894}
-  - {fileID: 7012083221494867464}
   - {fileID: 6930534261700427708}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 4058339301
+  GlobalObjectIdHash: 1888880317
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -221,12 +221,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Binders.PlayerBinder
   ShowTopMostFoldoutHeaderGroup: 1
-  _networkTransform: {fileID: 0}
+  _playerMovementBinder: {fileID: 2756859351411164370}
+--- !u!114 &2756859351411164370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2946360991748808504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c803611f7f346a7b38b44d2ffd9d5fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Binders.PlayerMovementBinder
   _movementServer: {fileID: 1571158876156576375}
   _movementPrediction: {fileID: 628726402935212098}
   _remotePlayerMovement: {fileID: 7597152648597071157}
   _orientationTransform: {fileID: 6099424059257889894}
-  _groundCheckRadius: 0.2
+  _groundCheckRadius: 0.3
   _groundCheckMaxDistance: 0.25
   _height: 2
   _radius: 0.5
@@ -255,7 +267,7 @@ MonoBehaviour:
   _lookRoot: {fileID: 6930534261700427708}
   _effectsRoot: {fileID: 3519363920839151732}
   _sensitivity: 20
-  _xRotationClamp: 90
+  _xRotationClamp: 80
   _movementVelocityStopThreshold: 0.3
   _bobAmplitudeX: 0.07
   _bobAmplitudeY: 0.05
@@ -303,7 +315,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NGO.Client.RemotePlayerMovement
   ShowTopMostFoldoutHeaderGroup: 1
-  _interpolateTime: 1
+  _interpolationDelayTicks: 3
+  _maxSnapshots: 32
 --- !u!1 &5564915658207800953
 GameObject:
   m_ObjectHideFlags: 0
@@ -362,13 +375,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6372889734902981751}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.13052596, y: -0, z: -0, w: 0.99144495}
-  m_LocalPosition: {x: 0, y: 2, z: -6}
+  m_LocalRotation: {x: 0.043619405, y: 0, z: 0, w: 0.9990483}
+  m_LocalPosition: {x: 1, y: 1, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3519363920839151732}
-  m_LocalEulerAnglesHint: {x: 15, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &5963601517132505672
 Camera:
   m_ObjectHideFlags: 0
@@ -472,37 +485,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!1 &7104543739138312510
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7012083221494867464}
-  m_Layer: 4
-  m_Name: GroundCheckOrigin
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7012083221494867464
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7104543739138312510}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.95, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1769244719513243269}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8760968791342518834
 GameObject:
   m_ObjectHideFlags: 0
@@ -560,7 +542,7 @@ Transform:
   m_GameObject: {fileID: 9015494923068411528}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
